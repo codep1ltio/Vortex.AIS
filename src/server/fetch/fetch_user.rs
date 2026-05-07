@@ -1,4 +1,4 @@
-use reqwest::header::{COOKIE};
+use reqwest::{header::COOKIE};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -13,10 +13,38 @@ pub struct User {
     pub created_at: String,
 }
 
-static SESSION: &str = "session_token=b23298634b75f5ec18a609882f6b40103620c14c7d9d3e8cfae0a0fe276934bb";
+static SESSION: &str = "session_token=0b6aa443c12d27a4867961a1c7c737fc5a2c65214c9decf207fccb9df47808dc";
 
-pub fn fetch_client_name() -> String {
-    ".".to_string()
+pub async fn fetch_newest_user(client: &reqwest::Client) -> Option<String> {
+    let mut low = 1u64;
+    let mut high = 1u64;
+    loop {
+        let ok = client
+            .get(format!("https://vortex.towerstats.com/api/users/{high}"))
+            .header(COOKIE, SESSION)
+            .send()
+            .await
+            .ok()?
+            .status()
+            .is_success();
+        if !ok {break;}
+        low = high;
+        high *= 2;
+    }
+    while low + 1 < high {
+        let mid = (low + high) / 2;
+
+        let ok = client
+            .get(format!("https://vortex.towerstats.com/api/users/{mid}"))
+            .header(COOKIE, SESSION)
+            .send()
+            .await
+            .ok()?
+            .status()
+            .is_success();
+
+        if ok {low = mid;} else {high = mid;}
+    } Some(low.to_string())
 }
 
 pub async fn fetch_user_name(client: &reqwest::Client, id: &str) -> Option<String> {
