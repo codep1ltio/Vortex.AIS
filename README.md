@@ -6,6 +6,7 @@ Join our community: `https://discord.gg/Q8wZHJ8PuF`
 
 
 Changes have been moved, Discord bot now has its own space.
+
 ~~## Version 1.2~~
 ~~- Updated Injectors to match
   with current Vortex+ Extension~~
