@@ -45,11 +45,11 @@ impl Default for App {
             repairing: false,
             logs: vec![
                 "Launcher started.".to_string(),
-                "-----------------------------".to_string(),
+                "-------------------------------".to_string(),
                 "If you haven't yet, please join our discord!".to_string(),
                 "We need your help and your suggestions!".to_string(),
                 "https://discord.gg/Q8wZHJ8PuF".to_string(),
-                "-----------------------------".to_string(),
+                "-------------------------------".to_string(),
             ],
         }
     }
