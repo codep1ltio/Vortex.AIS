@@ -12,7 +12,7 @@
 // Made by Slime King
 //Btw I had Co-Pilot help me with ts math portions at some points, not a guy willing to be doing math first thing in the morning
 
-(function () {
+let shaders = (function() {
     'use strict';
     const page = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
     const AUTO_ENABLE = true; //Might want this on lowky
@@ -463,4 +463,6 @@
     //waiting
     waitForVortex()
         .then(() => { if (AUTO_ENABLE) installShader(); }).catch((error) => console.warn('Raytracing -->', error));
-})();
+});
+
+//shaders();
