@@ -17,9 +17,10 @@ async fn main() -> wry::Result<()> {
     let inject = include_str!("javascript/inject.js");
     let search = include_str!("javascript/search.js");
     let shader = include_str!("javascript/shader.js");
+    let maploader = include_str!("javascript/maploader.js");
     let css = include_str!("style.css");
 
-    let script = format!(r#"(() => {{{} {} {} run(`{}`)}})();"#, inject, search, shader, css); 
+    let script = format!(r#"(() => {{{inject} {search} {shader} {maploader} run(`{css}`)}})();"#); 
 
     let window = WindowBuilder::new()
         .with_title("Vortex Plus")
