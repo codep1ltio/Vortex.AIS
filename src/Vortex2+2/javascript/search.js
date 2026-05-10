@@ -1,11 +1,18 @@
-// Created by Enk
-(async function listUsersInfiniteScroll() {
+// Created by Enk, modified by Inuk
+(async function () {
+    const url = new URL(document.URL);
+    if(url.pathname!='/search') return
+    const query = url.searchParams.get("q");
+    if(query) return;
+    document.getElementById('results-area').style.opacity='0';
     async function userExists(id) {
-        const res = await fetch(`/api/users/${id}`);
-        return res.status !== 404;
+        try {
+            const res = await fetch('/api/users/' + id);
+            return res.status !== 404;
+        } catch { }
     }
 
-    async function findHighestUserId(max = 10000) {
+    async function getLatestUser(max = 10000) {
         let low = 1, high = max, highest = 0;
         while (low <= high) {
             const mid = Math.floor((low + high) / 2);
@@ -19,7 +26,7 @@
         return highest;
     }
 
-    const maxUserId = await findHighestUserId();
+    const maxUserId = await getLatestUser();
 
     const batchSize = 11;
     let currentId = 1;
@@ -30,61 +37,57 @@
     if (!container) {
         container = document.createElement('div');
         container.id = 'my-user-list-container';
-        container.style.padding = '12px';
-        container.style.background = 'rgb(27, 26, 26)';
+        container.style.padding = '0';
+        container.style.background = 'var(--bgcol1)';
         container.style.borderRadius = '6px';
         const resultsArea = document.getElementById('results-area');
         resultsArea.insertAdjacentElement('afterend', container);
     }
     container.innerHTML = '';
 
-    const header = document.createElement('div');
-    header.style.display = 'flex';
-    header.style.alignItems = 'center';
-    header.style.marginBottom = '12px';
-    header.style.gap = '6px';
+    let header = document.createElement('div');
+    Object.assign(header.style, {
+        display: 'flex',
+        alightItems: 'center',
 
-    const input = document.createElement('input');
-    input.type = 'number';
-    input.placeholder = 'User ID';
-    input.style.width = '80px';
-    input.style.padding = '4px 6px';
-    input.style.background = 'rgb(53,53,56)';
-    input.style.color = 'white';
-    input.style.border = '0';
-    input.style.borderRadius = '4px';
+        marginBottom: '12px',
+        gap: '6px'
+    })
 
-    const searchBtn = document.createElement('button');
-    searchBtn.textContent = 'Search';
-    searchBtn.style.padding = '4px 6px';
-    searchBtn.style.background = 'rgb(53,53,56)';
-    searchBtn.style.color = 'white';
-    searchBtn.style.border = '0';
-    searchBtn.style.borderRadius = '4px';
-    searchBtn.style.cursor = 'pointer';
+    let defStyle = {
+        padding: '4px 6px',
+        background: 'var(--bgcol2)',
+        color: 'white',
+        border: '0',
+        borderRadius: '4px',
+        cursor: 'pointer'
+    };
 
-    const upBtn = document.createElement('button');
-    upBtn.textContent = '^';
-    upBtn.style.padding = '4px 6px';
-    upBtn.style.background = 'rgb(53,53,56)';
-    upBtn.style.color = 'white';
-    upBtn.style.border = '0';
-    upBtn.style.borderRadius = '4px';
-    upBtn.style.cursor = 'pointer';
+    const userIdInput = document.createElement('input');
+    Object.assign(userIdInput.style,defStyle);
+    userIdInput.type = 'number';
+    userIdInput.placeholder = 'User ID';
+    userIdInput.style.width = '80px';
 
-    const downBtn = document.createElement('button');
-    downBtn.textContent = 'v';
-    downBtn.style.padding = '4px 6px';
-    downBtn.style.background = 'rgb(53,53,56)';
-    downBtn.style.color = 'white';
-    downBtn.style.border = '0';
-    downBtn.style.borderRadius = '4px';
-    downBtn.style.cursor = 'pointer';
 
-    header.appendChild(input);
-    header.appendChild(searchBtn);
-    header.appendChild(upBtn);
-    header.appendChild(downBtn);
+
+    const searchButton = document.createElement('button');
+    Object.assign(searchButton.style, defStyle)
+
+    const sortSelector = document.createElement('select');
+    Object.assign(sortSelector.style, defStyle)
+    sortSelector.value = 1
+    const oldestOption = document.createElement('option')
+    oldestOption.innerText = 'sort oldest'
+    oldestOption.value = 1
+    const newestOption = document.createElement('option')
+    newestOption.innerText = 'sort newest'
+    newestOption.value = 2
+
+    sortSelector.appendChild(oldestOption)
+    sortSelector.appendChild(newestOption)
+    header.appendChild(userIdInput);
+    header.appendChild(sortSelector);
     container.appendChild(header);
 
     const list = document.createElement('div');
@@ -93,8 +96,8 @@
 
     let friends = new Set();
     try {
-        const meFriends = await fetch('/api/friends').then(r => r.ok ? r.json() : []);
-        friends = new Set(meFriends.map(f => f.id));
+        const myFriends = await fetch('/api/friends').then(r => r.ok ? r.json() : []);
+        friends = new Set(myFriends.map(f => f.id));
     } catch { }
 
     function avatarColor(username) {
@@ -122,7 +125,7 @@
             const btn = document.createElement('button');
             btn.className = 'btn-primary';
             btn.textContent = 'Add Friend';
-            btn.onclick = async () => {
+            btn.onclick = async function() {
                 btn.disabled = true;
                 btn.textContent = '...';
                 const res = await fetch(`/api/friends/request/${user.id}`, { method: 'POST' });
@@ -168,12 +171,13 @@
             row.style.marginBottom = '6px';
             row.style.padding = '4px';
             row.style.borderRadius = '6px';
-            row.style.background = 'rgb(37,37,37)';
+            row.style.background = 'var(--bgcol2)';
+            row.style.borderColor = 'var(--linecol2)'
 
             const idBox = document.createElement('div');
             idBox.textContent = `#${id}`;
             idBox.style.marginRight = '8px';
-            idBox.style.color = '#aaa';
+            idBox.style.color = 'var(--textcol2)';
             row.appendChild(idBox);
 
             const avatar = document.createElement('div');
@@ -243,7 +247,7 @@
             const nameLink = document.createElement('a');
             nameLink.href = `/users/${u.id}/profile`;
             nameLink.textContent = u.username;
-            nameLink.style.color = 'white';
+            nameLink.style.color = 'var(--textcol1)';
             nameLink.style.textDecoration = 'none';
             nameLink.style.fontWeight = '500';
             ph.row.replaceChild(nameLink, ph.name);
@@ -267,8 +271,8 @@
     window.addEventListener('resize', checkScroll);
     setInterval(checkScroll, 200);
 
-    searchBtn.onclick = () => {
-        const id = parseInt(input.value);
+    searchButton.onclick = function() {
+        const id = parseInt(userIdInput.value);
         if (id > 0 && id <= maxUserId) {
             currentId = id;
             list.innerHTML = '';
@@ -276,9 +280,14 @@
         }
     };
 
-    input.addEventListener('keypress', e => { if (e.key === 'Enter') searchBtn.click(); });
-    upBtn.onclick = () => { oldestFirst = true; currentId = 1; list.innerHTML = ''; loadBatch(); };
-    downBtn.onclick = () => { oldestFirst = false; currentId = maxUserId; list.innerHTML = ''; loadBatch(); };
+    userIdInput.addEventListener('keypress', e => { if (e.key === 'Enter') searchButton.click(); });
+    sortSelector.onchange = function() {
+        if (sortSelector.value == '1') {
+            oldestFirst = true; currentId = 1; list.innerHTML = ''; loadBatch();
+        } else {
+            oldestFirst = false; currentId = maxUserId; list.innerHTML = ''; loadBatch();
+        }
+    }
 
     await loadBatch();
 })();

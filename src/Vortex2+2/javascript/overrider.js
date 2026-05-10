@@ -1,7 +1,7 @@
 const redirects = {
-    ["vortex-engine.js"]: "new_engine.js",
-    ["multiplayer.js"]: "multiplayer2+2.js",
-    ["parts.js"]: "new_demoparts.js"
+    ["vortex-engine.js"]: "vortex2+2_engine.js",
+    ["multiplayer.js"]: "vortex2+2_multiplayer.js",
+    ["parts.js"]: "vortex2+2_enginedemoparts.js"
 
 }
 
@@ -9,9 +9,9 @@ const redirects = {
 function local_thingy_platform_check(localPath) {
     const ua = navigator.userAgent.toLowerCase();
     if (ua.includes("windows") || ua.includes("android")) {
-        return 'https://local.' + localPath;
+        return 'https://v22.' + localPath;
     }
-    return 'local://' + localPath;
+    return 'v22://' + localPath;
 };
 
 let observer = new MutationObserver(function (mutations) {
@@ -21,7 +21,7 @@ let observer = new MutationObserver(function (mutations) {
                 let divided = node.src.split('/');
                 let scriptName = divided[divided.length - 1]
                 if (redirects[scriptName]) {
-                    node.src = local_thingy_platform_check(redirects[scriptName]);
+                    node.src = local_thingy_platform_check('redirects/'+redirects[scriptName]);
                 }
             }
         }

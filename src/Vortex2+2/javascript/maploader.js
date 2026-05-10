@@ -123,7 +123,7 @@
 
     var url_string = document.URL;
     var url = new URL(url_string);
-    var gamei = url.searchParams.get("VPlusGameId");
+    var gamei = url.searchParams.get("V22GameId");
     if (gamei) {
         let map = maps[gamei]
         window.map=map;
@@ -157,7 +157,7 @@
 
                 let main = document.createElement('a');
                 main.className = 'game-card'
-                main.href = '/games/1?VPlusGameId=' + i
+                main.href = '/games/1?V22GameId=' + i
                 let thumb = document.createElement('div')
                 thumb.className = 'game-card-thumb'
                 main.appendChild(thumb)
@@ -187,7 +187,7 @@
         } else if (document.location.pathname == '/games/1') {
             var url_string = document.URL;
             var url = new URL(url_string);
-            var gamei = url.searchParams.get("VPlusGameId");
+            var gamei = url.searchParams.get("V22GameId");
             if (gamei) {
                 let f = await fetch('/api/game-stats')
                 let gameStats = await f.json()
@@ -229,7 +229,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <a class="btn-play" href="https://vortex.towerstats.com/demo?VPlusGameId=${gamei}">Play</a>
+                            <a class="btn-play" href="https://vortex.towerstats.com/demo?V22GameId=${gamei}">Play</a>
                         </div>
 
                         <div class="game-description-box">
@@ -243,7 +243,7 @@
 
             var url_string = document.URL;
             var url = new URL(url_string);
-            var gamei = url.searchParams.get("VPlusGameId");
+            var gamei = url.searchParams.get("V22GameId");
             let tmap
             if (gamei) {
                 tmap = maps[gamei]
