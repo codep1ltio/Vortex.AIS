@@ -1,6 +1,6 @@
 # Vortex AIS
-AIS is a version of Vortex2+2 built as an application with its own bootstrapper and integrated server.
-Join us: https://discord.gg/E9y6WfEdPW
+### AIS is a version of Vortex2+2 built as an application with its own bootstrapper and integrated server.
+#### Join us: https://discord.gg/E9y6WfEdPW
 ---
 
 ## Why do we need a server?
