@@ -46,7 +46,7 @@ Any contribution is appreciated.
 
 ---
 
-| Date | Version | Release |
-|------|-----------|--------|
-| 10/5/26  | v1.1      | Beta    |
-| ...  | v1.0      | Alpha    |
+| Date | Version | Release | Additions/Changes |
+|------|-----------|--------||--------|
+| 10/5/26  | v1.1      | Beta    | Vortex2+2 Integration and Bootstrapper |
+| ...  | v1.0      | Alpha    | None (Initial Publish) |
