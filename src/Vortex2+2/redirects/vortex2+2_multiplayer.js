@@ -13,6 +13,11 @@ function _clonePlayerFBX() {
     if (!src) return null;
 
     const clone = src.clone(true);
+    const toRemove = [];
+    clone.traverse(o => {
+        if (o.name === "_shirtOverlay") toRemove.push(o);
+    });
+    toRemove.forEach(o => o.parent?.remove(o));
 
     const srcBones = {}, cloneBones = {};
     src.traverse(n => { if (_isBone(n)) srcBones[n.name] = n; });
@@ -62,21 +67,24 @@ function _makeNameLabel(username) {
     return spr;
 }
 
-function makeRemote(username, id) {
-    const clone = _clonePlayerFBX();
-    if (!clone) return null;
+function makeRemote(username, id, shirtUrl) {
+    const grp = _clonePlayerFBX();
+    if (!grp) return null;
 
     const fo = _vortex.getCharFootOffset();
     const ch = _vortex.getCharHeight();
     const spr = _makeNameLabel(username);
     spr.position.y = ch - fo + 1.4;
-    clone.add(spr);
+    grp.add(spr);
 
     const bones = {};
-    clone.traverse(n => { if (_isBone(n)) bones[n.name] = n; });
+    grp.traverse(n => { if (_isBone(n)) bones[n.name] = n; });
     const rest = _vortex.getAnimRest();
-
-    return { grp: clone, bones, rest, id: id };
+    const shirtMesh = _vortex.buildShirtOverlay(grp);
+    if (shirtMesh && shirtUrl) {
+        _vortex.applyShirtToMesh(shirtMesh, shirtUrl);
+    }
+    return { grp, bones, rest, shirtMesh };
 }
 
 function disposeRemote(m) {
@@ -105,7 +113,7 @@ function _setPosY(bones, rest, name, offset, sp, dt) {
 }
 
 let swords = new Map()
-function _animateRemote(id,r, dt) {
+function _animateRemote(id, r, dt) {
     const { bones, rest } = r.meshes;
     const sp = 12;
     r.animTime += dt;
@@ -163,7 +171,7 @@ function _animateRemote(id,r, dt) {
     if (window.SWORD_FIGHT) {
         let sword = swords.get(id);
         if (!swords.has(id)) {
-            swords.set(id,false);
+            swords.set(id, false);
             console.log('no sword for id ' + id + ', making one now!')
             fbxLoader.load(importedAssets.swordMdl, (fbx) => {
                 fbx.scale.multiplyScalar(0.005);
@@ -176,7 +184,7 @@ function _animateRemote(id,r, dt) {
             });
             return
         }
-        if(!sword) return
+        if (!sword) return
         _setB(bones, rest, 'Right_Arm', 'x', -Math.PI * 0.5, 1, 1);
         bones.Right_Arm.position.y = 1.5
         bones.Right_Arm.position.z = -0.5
@@ -359,11 +367,11 @@ function _redrawHealthbar(id, health) {
     grad.addColorStop(1, "#2b5806");
     ctx.fillStyle = grad;
     ctx.fillRect(5, 5, Math.max(5, Math.min(canvas.width - 10, canvas.width * health)), canvas.height - 10);
-    ctx.font = 'small-caps bold '+(canvas.height-20)+'px sans-serif';
+    ctx.font = 'small-caps bold ' + (canvas.height - 20) + 'px sans-serif';
     ctx.fillStyle = "white";
-    ctx.textAlign='end'
-    ctx.textBaseline='middle'
-    ctx.fillText("HEALTH", canvas.width - 10, (canvas.height - 10)*0.65);
+    ctx.textAlign = 'end'
+    ctx.textBaseline = 'middle'
+    ctx.fillText("HEALTH", canvas.width - 10, (canvas.height - 10) * 0.65);
 
     if (!hbar.sprite) {
         hbar.sprite = new THREE.Sprite(new THREE.SpriteMaterial({ depthTest: false, transparent: true }));
@@ -479,11 +487,11 @@ let _reconnectAttempts = 0;
 const _MAX_RECONNECTS = 3;
 
 async function connect() {
-    const res = await fetch(`/api/ws-ticket?game_id=${window.GAME_ID || 0}&fingerprint=${encodeURIComponent(window._fingerprint || '')}`).then(r => r.ok ? r.json() : null);
+    const res = await fetch(`/api/ws-ticket?game_id=${window.GAME_ID || 0}&fingerprint=${encodeURIComponent(window._fingerprint || '')}?fp_token=`).then(r => r.ok ? r.json() : null);
     if (!res) { console.log('failed to connect'); setTimeout(connect, 4000); return; }
 
     const proto = location.protocol === 'https:' ? 'wss' : 'ws';
-    ws = new WebSocket(`${proto}://${location.host}/ws/game?ticket=${res.ticket}`);
+    ws = new WebSocket(`${proto}://${location.host}/ws/play?t=${res.ticket}`);
 
     ws.onopen = () => {
         console.log('websocket opened');
@@ -538,8 +546,8 @@ function decodeNetworkData(playerData, r) {
 
     let healthBits = (specialState >>> 0) & ((1 << 4) - 1);
     let slicingBits = (specialState >>> 4) & ((1 << 1) - 1);
-    if(!customPlayerData[playerData.id]) {
-        customPlayerData[playerData.id]={
+    if (!customPlayerData[playerData.id]) {
+        customPlayerData[playerData.id] = {
             health: 1,
             slicing: false,
         }
@@ -589,8 +597,11 @@ function handle(d) {
             Leaderboard.setMyId(myId);
             Leaderboard.addPlayer({ id: myId, username: d.username, is_staff: d.is_staff, is_booster: d.is_booster });
             for (const p of d.players) {
-                addRemote(p.id, p.username, p.is_staff, p.is_booster);
+                addRemote(p.id, p.username, p.is_staff, p.is_booster, p.shirt_id);
                 _showHealthBar(p.id)
+            }
+            if (d.shirt_id) {
+                _vortex.applyShirt(d.shirt_id ? "/assets/clothing/" + d.shirt_id + ".png" : null);
             }
             _showHealthBar(myId);
             fetchFriendData();
@@ -599,7 +610,7 @@ function handle(d) {
 
         case 'join': {
             if (d.id === myId) break;
-            addRemote(d.id, d.username, d.is_staff, d.is_booster);
+            addRemote(d.id, d.username, d.is_staff, d.is_booster, d.shirt_id);
             _showHealthBar(d.id);
             Chat.systemPlayer(d.username, `${d.username} joined.`, false);
             break;
@@ -611,7 +622,7 @@ function handle(d) {
             break;
         }
 
-        case 'kick_log': {
+        case 'kickbroad': {
             Chat.clearPlayerMsg(d.username);
             Chat.systemRed(`${d.username} was kicked by ${d.by}.`);
             removeRemote(d.id);
@@ -633,6 +644,11 @@ function handle(d) {
             break;
         }
 
+        case "chat_muted": {
+            Chat.system("You have been muted for " + d.minutes + " minutes by an administrator.");
+            break;
+        }
+
         case 'chat_throttled': {
             Chat.warn(`Please wait ${d.wait}s before sending another message.`);
             break;
@@ -640,6 +656,26 @@ function handle(d) {
 
         case 'chat_blocked': {
             Chat.warn(d.msg);
+            break;
+        }
+
+        case "system": {
+            Chat.system(d.msg);
+            break;
+        }
+
+        case "shirt_update": {
+            const rp = remotes.get(d.id);
+            if (rp?.meshes) {
+                _vortex.applyShirtToMesh(rp.meshes.shirtMesh, d.shirt_id ? "/assets/clothing/" + d.shirt_id + ".png" : null);
+            } else {
+                const pending = _pendingAvatars.get(d.id);
+                if (pending) pending.shirt_id = d.shirt_id;
+            }
+            break;
+        }
+        case "screen_open": {
+            window.openScreen?.(d.screen_id, d.token);
             break;
         }
 
@@ -684,12 +720,12 @@ window._mpSetFriendStatus = function (id, status) {
     Leaderboard.setFriendStatus(id, status);
 };
 
-function addRemote(id, username, is_staff, is_booster) {
+function addRemote(id, username, is_staff, is_booster, shirtId) {
     if (remotes.has(id)) return;
-
+    const shirtUrl = shirtId ? "/assets/clothing/" + shirtId + ".png" : null;
     let meshes = null;
-    if (_vortex.getCharacter()) { try { meshes = makeRemote(username, id); } catch (e) { console.error('[mp] makeRemote failed:', e); } }
-    if (!meshes) _pendingAvatars.set(id, { username, is_staff, is_booster });
+    if (_vortex.getCharacter()) { try { meshes = makeRemote(username, id, shirtUrl); } catch (e) { console.error('[mp] makeRemote failed:', e); } }
+    if (!meshes) _pendingAvatars.set(id, { username, is_staff: isStaff, is_booster: isBooster, shirt_id: shirtId });
 
     remotes.set(id, {
         meshes,
@@ -771,7 +807,12 @@ window._mpUpdate = function (dt) {
         for (const [id, info] of _pendingAvatars) {
             const r = remotes.get(id);
             if (r && !r.meshes) {
-                try { r.meshes = makeRemote(info.username, id); } catch (e) { console.error('[mp] makeRemote failed:', e); }
+                try {
+                    r.meshes = makeRemote(info.username, id, info.shirt_id ? "/assets/clothing/" + info.shirt_id + ".png" : null);
+                } catch (e) {
+                    console.error('[mp] makeRemote failed:', e);
+                }
+
                 if (r.meshes) r.meshes.grp.visible = false;
             }
         }
@@ -797,7 +838,7 @@ window._mpUpdate = function (dt) {
         else if (g.rotation.y < -Math.PI) g.rotation.y += 2 * Math.PI;
 
         if (camPos) {
-            _animateRemote(key,r, dt);
+            _animateRemote(key, r, dt);
         }
     }
 
@@ -808,3 +849,14 @@ window._mpSendChat = function (msg) {
     if (!ws || ws.readyState !== WebSocket.OPEN) return;
     ws.send(JSON.stringify({ type: 'chat', msg }));
 }
+
+window._mpCreateDummy = function (x, y, z, shirtUrl, ry = 0) {
+    const char = _clonePlayerFBX();
+    if (!char) return
+    char.position.set(x, y, z);
+    char.rotation.y = ry;
+    char.visible = true;
+    const sm = _vortex.buildShirtOverlay(char);
+    if (sm && shirtUrl) _vortex.applyShirtToMesh(sm, shirtUrl);
+    return char;
+};
