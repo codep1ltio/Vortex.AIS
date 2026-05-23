@@ -1,6 +1,9 @@
 ## Welcome!
 We won't make this too long for you to read.
 
+# VORTEX AIS IS NOT RELEASED YET!
+EVERYTHING HERE IS MOSTLY A PLAN RIGHT NOW!
+
 ### Introduction to Vortex AIS
 - Community -> https://discord.gg/E9y6WfEdPW
 - > Join our community and help us come up with ideas, or contribute, or just hangout and keep up with new updates!
