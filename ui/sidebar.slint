@@ -1,0 +1,65 @@
+import { Button } from "std-widgets.slint";
+import { AppState } from "global.slint";
+
+export component Sidebar inherits Rectangle {
+
+    x: 16px;
+
+    width: 70px;
+    background: #27272c4e;
+
+    VerticalLayout {
+        spacing: 8px;
+        y: 8px;
+
+        Rectangle {
+            if AppState.current-page == "home": Rectangle {
+                background: #91c4ff;
+                width: 6px;
+                x: -10px;
+                border-radius: 2px;
+            }
+
+            Text {
+                text: "Launcher";
+            }
+
+            background: AppState.current-page == "home" ? #2b71c0a4 : #27272c4e;
+            height: 30px;
+            border-radius: 6px;
+
+            animate background { duration: 100ms; }
+
+            TouchArea {
+                clicked => {
+                    AppState.FNnavigate("home");
+                }
+            }
+        }
+
+        Rectangle {
+            if AppState.current-page == "mods": Rectangle {
+                background: #91c4ff;
+                width: 6px;
+                x: -10px;
+                border-radius: 2px;
+            }
+
+            Text {
+                text: "Addons";
+            }
+
+            background: AppState.current-page == "mods" ? #2b71c0a4 : #27272c4e;
+            height: 30px;
+            border-radius: 6px;
+
+            animate background { duration: 100ms; }
+
+            TouchArea {
+                clicked => {
+                    AppState.FNnavigate("mods");
+                }
+            }
+        }
+    }
+}

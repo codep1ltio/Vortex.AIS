@@ -1,0 +1,122 @@
+import { AppState } from "../global.slint";
+export component Launcher inherits Rectangle {
+
+    Rectangle {
+        background: #27272c4e;
+        border-radius: 16px;
+        x: 100px;
+        y: 25px;
+
+        Rectangle {
+            x: 10px;
+            y: 10px;
+
+            background: #27272c4e;
+            border-radius: 16px;
+
+            Text {
+                text: "Vortex AIS";
+                x: 15px;
+                y: 15px;
+                font-size: 25px;
+            }
+
+            Text {
+                text: "AIS is here to make modding Vortex a lot easier";
+                x: 15px;
+                y: 50px;
+                font-size: 10px;
+            }
+
+            Rectangle {
+                x: 20px;
+                y: 80px;
+                background: #27272c;
+                border-radius: 8px;
+
+                width: 170px;
+                height: 40px;
+
+                Text {
+                    text: "Launch Vortex";
+                    font-size: 14px;
+                }
+            }
+
+            Rectangle { // console
+                x: 10px;
+                y: 140px;
+                background: #1f1f22;
+                border-radius: 16px;
+
+                Text {
+                    text: "Console";
+                    font-size: 24px;
+                    x: 15px;
+                    y: 10px;
+                }
+
+                Rectangle {
+                    background: #28282c3b;
+                    x: 0;
+                    y: 45px;
+                    width: 400px;
+                    height: 175px;
+
+                    VerticalLayout {
+                        padding: 12px;
+                        spacing: 0px;
+                        alignment: start;
+
+                        for l in AppState.logs: Text {
+                            text: l;
+                            color: white;
+                            wrap: word-wrap;
+                        }
+                    }
+                }
+            }
+        }
+
+        Rectangle {
+            background: #1f1f22;
+            border-radius: 16px;
+            border-color: #46464b4e;
+            border-width: 1px;
+            width: 220px;
+            x: 420px;
+            y: 20px;
+
+            Text {
+                text: "Guidelines & Details";
+                font-size: 20px;
+                x: 15px;
+                y: 15px;
+            }
+
+            Rectangle {
+                y: 45px;
+                x: 10px;
+                width: 200px;
+                height: 1px;
+                background: #333;
+            }
+
+            Text {
+                wrap: word-wrap;
+                text: "Guidelines\n• Please do not use this software to exploit/cheat in games.\n• Please report bugs or possible ways to exploit in our discord.\n• Vortex AIS is here to only make modding Vortex easier.\n• This software is licensed as MIT";
+                width: 200px;
+                x: 15px;
+                y: 60px;
+            }
+
+            Text {
+                wrap: word-wrap;
+                text: "Information\n• Server: disc.gg/dF4pZba7J6\n• GitHub: codep1ltio/Vortex.AIS\n\nDevelopers & Contributors\n• @cod.io (Developer)\n...(and more)";
+                width: 200px;
+                x: 15px;
+                y: 190px;
+            }
+        }
+    }
+}

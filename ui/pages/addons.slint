@@ -1,0 +1,153 @@
+import { AppState, Mod, ModList } from "../global.slint";
+import { ScrollView } from "std-widgets.slint";
+export component Addons inherits Rectangle {
+
+    Rectangle {
+        background: #1e1e20;
+        border-radius: 8px;
+        x: 100px;
+        y: 25px;
+
+        ScrollView {
+            width: parent.width;
+            height: parent.height;
+
+            mouse-drag-pan-enabled: true;
+
+            VerticalLayout {
+                spacing: 4px;
+                padding: 1px;
+                alignment: start;
+
+                for list[i] in AppState.mod_list: VerticalLayout {
+                    spacing: 4px;
+                    for mod[j] in list.mods: Rectangle {
+                        width: AppState.selected-mod-id != 0 ? 450px : 600px;
+                        border-radius: 4px;
+
+                        animate width { duration: 60ms; }
+
+                        height: layout.preferred-height + 4px;
+
+                        touch := TouchArea {
+                            clicked => {
+                                if AppState.selected-mod-id == mod.id {
+                                    AppState.selected-mod-id = 0;
+                                } else {
+                                    AppState.selected-mod-id = mod.id;
+                                    AppState.selected-mod.name = mod.name;
+                                    AppState.selected-mod.author = mod.author;
+                                    AppState.selected-mod.description = mod.description;
+                                    AppState.selected-mod.version = mod.version;
+                                }
+                            }
+                        }
+
+                        background: !touch.has-hover ? (mod.id == AppState.selected-mod-id ? #333b33 : #222) : (mod.id == AppState.selected-mod-id ? #333b33 : #272727);
+
+                        layout := VerticalLayout {
+                            padding: 4px;
+                            spacing: 3px;
+                            alignment: start;
+
+                            Text {
+                                text: mod.name;
+                                color: white;
+                            }
+
+                            Text {
+                                text: "By " + mod.author;
+                                color: #aaa;
+                            }
+
+                            Text {
+                                text: mod.description;
+                                color: #ccc;
+                                wrap: word-wrap;
+                            }
+
+                            Text {
+                                text: "Version: " + mod.version;
+                                color: #aaa;
+                            }
+                        }
+                    }
+                    Rectangle {
+                        width: 450px;
+                        height: 80px;
+                    }
+                }
+            }
+        }
+
+        if AppState.selected-mod-id != 0: Rectangle {
+            background: #222;
+            width: 175px;
+            x: 460px;
+
+            VerticalLayout {
+                alignment: start;
+                padding: 8px;
+                Text {
+                    text: AppState.selected-mod.name;
+                    color: white;
+                    font-size: 16px;
+                }
+
+                Text {
+                    text: "By " + AppState.selected-mod.author + "\n";
+                    color: #aaa;
+                }
+
+                Text {
+                    text: AppState.selected-mod.description;
+                    color: #ccc;
+                    wrap: word-wrap;
+                }
+
+                Text {
+                    text: "\n" + "Version: " + AppState.selected-mod.version;
+                    color: #aaa;
+                }
+
+                Text {
+                    text: "\n── Statistics ──────────"; // if someone is gonna frame me for "using AI", it's a dash unicode, u can search it up. ── ─ it makes the lines look a lot better
+                }
+
+                Text {
+                    text: "• Downloads: " + "0" + "\n• Favorites: " + "0";
+                }
+
+                Text {
+                    text: "───────────────────\n";
+                }
+
+                Rectangle {
+                    width: 160px;
+                    height: 35px;
+                    border-radius: 8px;
+                    background: #475747;
+
+                    Text {
+                        text: "Get " + AppState.selected-mod.name;
+                    }
+                }
+
+                Rectangle {
+                    height: 15px;
+                }
+
+                Rectangle {
+                    width: 160px;
+                    height: 35px;
+                    border-radius: 8px;
+                    background: #9b9456;
+
+                    Text {
+                        text: "Favorite " + AppState.selected-mod.name;
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,35 @@
+import { Button } from "std-widgets.slint";
+import { Sidebar } from "sidebar.slint";
+import { Launcher } from "pages/launcher.slint";
+import { Addons } from "pages/addons.slint";
+import { AppState } from "global.slint";
+export { AppState }
+
+export component MainWindow inherits Window {
+    title: "Vortex AIS";
+
+    default-font-family: "Inter";
+    default-font-weight: 400;
+
+    width: 740px;
+    height: 400px;
+
+    background: #131313;
+
+    Text {
+        text: "Vortex AIS Launcher • v0.0.0";
+        color: #3f3d42;
+        font-size: 8px;
+        y: 2px;
+        x: self.width;
+    }
+
+    Sidebar { }
+
+    if AppState.current-page == "home": Rectangle {
+        Launcher { }
+    }
+    if AppState.current-page == "mods": Rectangle {
+        Addons { }
+    }
+}
