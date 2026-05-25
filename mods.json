@@ -1,0 +1,31 @@
+{
+    "mods": [
+        {
+            "name": "Shaders",
+            "author": "auraFarming",
+            "description": "cool addon",
+            "version": "1.0.0",
+            "favorites": 4,
+            "downloads": 6,
+            "id": 1
+        },
+        {
+            "name": "Admin Panel",
+            "author": "HaloTheDeveloper",
+            "description": "An admin panel for noobs",
+            "version": "2.3.1",
+            "favorites": 3,
+            "downloads": 8,
+            "id": 2
+        },
+        {
+            "name": "Shortex",
+            "author": "Shortexian",
+            "description": "Lowers loading time by hacking into halo's servers and stealing source code",
+            "version": "1.8.7",
+            "favorites": 163,
+            "downloads": 1252,
+            "id": 3
+        }
+    ]
+}

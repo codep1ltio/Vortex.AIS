@@ -38,6 +38,8 @@ export component Addons inherits Rectangle {
                                     AppState.selected-mod.name = mod.name;
                                     AppState.selected-mod.author = mod.author;
                                     AppState.selected-mod.description = mod.description;
+                                    AppState.selected-mod.favorites = mod.favorites;
+                                    AppState.selected-mod.downloads = mod.downloads;
                                     AppState.selected-mod.version = mod.version;
                                 }
                             }
@@ -67,7 +69,7 @@ export component Addons inherits Rectangle {
                             }
 
                             Text {
-                                text: "Version: " + mod.version;
+                                text: "Version: " + mod.version + " | Favorites: " + mod.favorites + " | Downloads: " + mod.downloads;
                                 color: #aaa;
                             }
                         }
@@ -115,7 +117,7 @@ export component Addons inherits Rectangle {
                 }
 
                 Text {
-                    text: "• Downloads: " + "0" + "\n• Favorites: " + "0";
+                    text: "• Downloads: " + AppState.selected-mod.downloads + "\n• Favorites: " + AppState.selected-mod.favorites;
                 }
 
                 Text {

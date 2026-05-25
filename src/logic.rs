@@ -2,12 +2,12 @@ mod server;
 use server::*;
 
 #[macro_export]
-macro_rules! analysis {
+macro_rules! time {
     ($name:expr, $block:block) => {{
         let time = std::time::Instant::now();
         let result = $block;
         let dur = time.elapsed();
-        println!(">object: {}\n>time: {:.1?}", $name, dur);
+        println!(">Task: \x1b[32m{}\x1b[0m\n>Time: \x1b[34m{:.1?}\x1b[0m", $name, dur);
         result
     }};
 }
@@ -31,7 +31,7 @@ impl Launcher {
             ui.global::<AppState>().set_current_page(c);
 
             if ui.global::<AppState>().get_current_page() == "mods" {
-                match get_mods() {
+                match load_mods() {
                     Ok(mods) => ui.global::<AppState>().set_mod_list(mods),
                     Err(err) => eprintln!("{err}")
                 }
@@ -42,6 +42,6 @@ impl Launcher {
     }
 
     pub fn run(&self) {
-        analysis!("active", { self.ui.run().unwrap(); })
+        self.ui.run().unwrap();
     }
 }
