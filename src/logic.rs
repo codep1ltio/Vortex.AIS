@@ -35,8 +35,6 @@ impl Launcher {
                     Ok(mods) => ui.global::<AppState>().set_mod_list(mods),
                     Err(err) => eprintln!("{err}")
                 }
-            } else {
-                // # TODO: Cache mods
             }
         });
     }
