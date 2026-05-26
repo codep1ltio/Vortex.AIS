@@ -1,7 +1,11 @@
 mod server;
 use server::*;
 
+use crate::work_in_progress;
+//slint::include_modules!();
+
 pub mod lib;
+use lib::*;
 
 pub struct Launcher {
     ui: MainWindow,
@@ -26,6 +30,9 @@ impl Launcher {
                     Ok(mods) => ui.global::<AppState>().set_mod_list(mods),
                     Err(err) => eprintln!("{err}"),
                 },
+                "home" => {
+                    work_in_progress!();
+                }
                 _ => todo!(),
             }
         });

@@ -1,3 +1,5 @@
+slint::include_modules!();
+
 #[macro_export]
 macro_rules! time {
     ($name:expr, $block:block) => {{
@@ -9,5 +11,25 @@ macro_rules! time {
             $name, dur
         );
         result
+    }};
+}
+
+#[macro_export]
+macro_rules! work_in_progress {
+    () => {
+        println!(
+            "\nFILE: {}\nLINE: {} <- work in progress\n",
+            file!(),
+            line!(),
+        );
+    };
+
+    ($text:expr) => {{
+        println!(
+            "\n{}\n^^ is still work in progress\nFILE: {}\nLINE: {}\n",
+            $text,
+            file!(),
+            line!(),
+        );
     }};
 }

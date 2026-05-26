@@ -11,7 +11,7 @@ fn boot() -> Result<(), String> {
 
 fn main() {
     if let Err(err) = boot() {
-        eprintln!("{err}");
+        println!("{err}");
         //std::process::exit(1);
     }
 }

@@ -114,14 +114,17 @@ export component Addons inherits Rectangle {
 
                 Text {
                     text: "\n── Statistics ──────────"; // if someone is gonna frame me for "using AI", it's a dash unicode, u can search it up. ── ─ it makes the lines look a lot better
+                    color: #aaa;
                 }
 
                 Text {
                     text: "• Downloads: " + AppState.selected-mod.downloads + "\n• Favorites: " + AppState.selected-mod.favorites;
+                    color: #aaa;
                 }
 
                 Text {
                     text: "───────────────────\n";
+                    color: #aaa;
                 }
 
                 Rectangle {
@@ -132,6 +135,7 @@ export component Addons inherits Rectangle {
 
                     Text {
                         text: "Get " + AppState.selected-mod.name;
+                        color: white;
                     }
                 }
 
@@ -147,6 +151,7 @@ export component Addons inherits Rectangle {
 
                     Text {
                         text: "Favorite " + AppState.selected-mod.name;
+                        color: white;
                     }
                 }
             }
