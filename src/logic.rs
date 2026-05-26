@@ -7,7 +7,10 @@ macro_rules! time {
         let time = std::time::Instant::now();
         let result = $block;
         let dur = time.elapsed();
-        println!(">Task: \x1b[32m{}\x1b[0m\n>Time: \x1b[34m{:.1?}\x1b[0m", $name, dur);
+        println!(
+            ">Task: \x1b[32m{}\x1b[0m\n>Time: \x1b[34m{:.1?}\x1b[0m",
+            $name, dur
+        );
         result
     }};
 }
@@ -30,11 +33,12 @@ impl Launcher {
             let ui = weak.unwrap();
             ui.global::<AppState>().set_current_page(c);
 
-            if ui.global::<AppState>().get_current_page() == "mods" {
-                match load_mods() {
+            match ui.global::<AppState>().get_current_page().as_str() {
+                "mods" => match load_mods() {
                     Ok(mods) => ui.global::<AppState>().set_mod_list(mods),
-                    Err(err) => eprintln!("{err}")
-                }
+                    Err(err) => eprintln!("{err}"),
+                },
+                _ => todo!(),
             }
         });
     }
