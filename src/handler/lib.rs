@@ -16,13 +16,18 @@ macro_rules! time {
 
 #[macro_export]
 macro_rules! work_in_progress {
-    () => {
+    () => {{
         println!(
             "\nFILE: {}\nLINE: {} <- work in progress\n",
             file!(),
             line!(),
         );
-    };
+        $crate::handler::push_log(format!(
+            "\nFILE: {}\nLINE: {} <- work in progress\n",
+            file!(),
+            line!(),
+        ));
+    }};
 
     ($text:expr) => {{
         println!(
@@ -31,5 +36,19 @@ macro_rules! work_in_progress {
             file!(),
             line!(),
         );
+        $crate::handler::push_log(format!(
+            "\n{}\n^^ is still work in progress\nFILE: {}\nLINE: {}\n",
+            $text,
+            file!(),
+            line!(),
+        ));
+    }};
+}
+
+#[macro_export]
+macro_rules! err_log {
+    ($text:expr) => {{
+        println!("\nErr -> {} | {}, {}\n", $text, file!(), line!());
+        $crate::handler::push_log(format!("\nErr -> {} | {}, {}\n", $text, file!(), line!()));
     }};
 }

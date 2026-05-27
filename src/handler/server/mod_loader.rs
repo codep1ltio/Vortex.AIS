@@ -3,7 +3,7 @@ use slint::{ModelRc, VecModel};
 use std::cell::RefCell;
 use std::{fs, rc::Rc};
 
-use crate::logic::lib::*;
+use crate::handler::lib::*;
 use crate::time;
 
 #[derive(Deserialize)]

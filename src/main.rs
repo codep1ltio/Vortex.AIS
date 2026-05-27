@@ -1,9 +1,9 @@
-mod logic;
-use logic::Launcher;
+mod handler;
+use handler::Launcher;
 
 fn boot() -> Result<(), String> {
     let boot = Launcher::new();
-    boot.setup_callbacks();
+    boot.setup();
     boot.run();
 
     Ok(())

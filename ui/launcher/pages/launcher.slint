@@ -1,4 +1,5 @@
 import { AppState } from "../global.slint";
+import { ScrollView } from "std-widgets.slint";
 export component Launcher inherits Rectangle {
 
     Rectangle {
@@ -61,24 +62,32 @@ export component Launcher inherits Rectangle {
                 }
 
                 Rectangle {
+    
                     background: #28282c3b;
                     x: 0;
                     y: 45px;
                     width: 400px;
                     height: 175px;
+                    clip: true;
 
-                    VerticalLayout {
-                        padding: 12px;
-                        spacing: 0px;
-                        alignment: start;
+                    ScrollView {
+                        width: parent.width;
+                        height: parent.height;
 
-                        for l in AppState.logs: Text {
-                            text: l;
-                            color: white;
-                            wrap: word-wrap;
+                       VerticalLayout {
+                            padding: 12px;
+                            spacing: 6px;
+                            alignment: start;
+
+                            for l in AppState.logs: Text {
+                                text: l;
+                                color: white;
+                                wrap: word-wrap;
+                                width: 360px;
+                            }
                         }
                     }
-                }
+                }                
             }
         }
 

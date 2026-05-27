@@ -12,10 +12,7 @@ export struct ModList {mods: [Mod]}
 
 export global AppState {
     in-out property <string> current-page: "home";
-    in-out property <[string]> logs: [
-        "Welcome to Vortex AIS",
-        "Console will output necessary information for you to inform developers in case something goes wrong.",
-    ];
+    in-out property <[string]> logs: [];
     in-out property <int> selected-mod-id: 0;
     in-out property <Mod> selected-mod;
 
